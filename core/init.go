@@ -3,7 +3,7 @@
 // @Desc
 package core
 
-import "gee/utils"
+import "github.com/learnselfs/gee/utils"
 
 // init
 // @Description: 插件注册

@@ -4,7 +4,7 @@
 package core
 
 import (
-	"gee/utils"
+	"github.com/learnselfs/gee/utils"
 	"net/http"
 )
 
