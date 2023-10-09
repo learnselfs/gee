@@ -15,12 +15,17 @@ type Engine struct {
 	Port    string `json:"port"`
 }
 
+func (e *Engine) handler(c *Context) {
+	c.JSON(utils.Ok())
+}
+
 // ServeHTTP
 // @Description: 实现 http Handler 接口
 // @param w http.ResponseWriter
 // @param r *http.Request
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	utils.Log.Printf("client access: %s", r.URL.Path)
+	c := NewContext(w, r)
+	e.handler(c)
 }
 
 // Run
