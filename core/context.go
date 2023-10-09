@@ -6,6 +6,8 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/learnselfs/gee/config"
+	"github.com/learnselfs/gee/utils"
 	"net/http"
 )
 
@@ -36,11 +38,13 @@ func (c *Context) SetHeader(rType string) {
 	c.W.Header().Set("Content-Type", rType)
 }
 
-func (c *Context) JSON(obj H) {
+func (c *Context) JSON(obj config.H) {
+	utils.Log.Println(c.R.URL.Path)
 	c.SetHeader("application/json")
 	buf := json.NewEncoder(c.W)
 	err := buf.Encode(obj)
 	if err != nil {
+		utils.Log.Fatalln(err)
 		return
 	}
 }
@@ -54,7 +58,7 @@ func (c *Context) HTML(code int, html string) {
 	}
 }
 
-func (c *Context) String(code int, format string, data ...H) {
+func (c *Context) String(code int, format string, data ...config.H) {
 	c.SetHeader("text/plain")
 	c.StateCode = code
 	_, i := c.W.Write([]byte(fmt.Sprintf(format, data)))

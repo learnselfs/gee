@@ -3,5 +3,4 @@
 // @Desc
 package core
 
-type H map[string]interface{}
 type Handle func(*Context)

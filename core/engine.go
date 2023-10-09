@@ -5,6 +5,7 @@ package core
 
 import (
 	"github.com/learnselfs/gee/utils"
+	"log"
 	"net/http"
 )
 
@@ -16,7 +17,11 @@ type Engine struct {
 }
 
 func (e *Engine) handler(c *Context) {
-	c.JSON(utils.Ok())
+	if c.Path == "/" {
+		c.JSON(utils.Ok())
+	} else {
+		c.Data(404, []byte("Not Found"))
+	}
 }
 
 // ServeHTTP
@@ -31,6 +36,7 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Run
 // @Description: 启动函数
 func (e *Engine) Run() {
+	log.Printf("web server listening: %s:%s", e.Address, e.Port)
 	err := http.ListenAndServe(e.Address+":"+e.Port, e)
 	if err != nil {
 		return

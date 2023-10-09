@@ -4,22 +4,22 @@
 package utils
 
 import (
-	"github.com/learnselfs/gee/core"
+	"github.com/learnselfs/gee/config"
 	"net/http"
 )
 
-func msg(status string, code int, message string, data core.H) core.H {
-	return core.H{"status": status, "code": code, "msg": message, "data": data}
+func msg(status string, code int, message string, data config.H) config.H {
+	return config.H{"status": status, "code": code, "msg": message, "data": data}
 }
 
-func Ok() core.H {
-	return msg(http.StatusText(http.StatusOK), http.StatusOK, "OK", core.H{})
+func Ok() config.H {
+	return msg(http.StatusText(http.StatusOK), http.StatusOK, "OK", config.H{})
 }
 
-func OkWithMsg(status string, code int, message string, data core.H) core.H {
+func OkWithMsg(status string, code int, message string, data config.H) config.H {
 	return msg(status, code, message, data)
 }
 
-func OkWithDetails(status string, code int, message string, data core.H) core.H {
+func OkWithDetails(status string, code int, message string, data config.H) config.H {
 	return msg(status, code, message, data)
 }
