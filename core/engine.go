@@ -7,20 +7,27 @@ import (
 	"github.com/learnselfs/gee/utils"
 	"log"
 	"net/http"
+	"strings"
 )
 
 // Engine
 // @Description: 核心组件： 主要承载 官方组件 http server（实现 server 接口）
 type Engine struct {
+	*Route  `json:"route"`
 	Address string `json:"address"`
 	Port    string `json:"port"`
 }
 
+// handler
+// @Description: server's processor
+// @receiver e
+// @param c
 func (e *Engine) handler(c *Context) {
-	if c.Path == "/" {
-		c.JSON(utils.Ok())
+	fullPath := strings.Join([]string{c.Method, c.Path}, "-")
+	if handle, ok := e.Maps[fullPath]; ok {
+		handle(c)
 	} else {
-		c.Data(404, []byte("Not Found"))
+		c.JSON(utils.Fail())
 	}
 }
 
@@ -36,7 +43,7 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Run
 // @Description: 启动函数
 func (e *Engine) Run() {
-	log.Printf("web server listening: %s:%s", e.Address, e.Port)
+	log.Printf("V3 web server listening: %s:%s", e.Address, e.Port)
 	err := http.ListenAndServe(e.Address+":"+e.Port, e)
 	if err != nil {
 		return

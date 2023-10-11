@@ -6,5 +6,5 @@ package main
 import "github.com/learnselfs/gee/core"
 
 func New(address, port string) *core.Engine {
-	return &core.Engine{Address: address, Port: port}
+	return &core.Engine{Address: address, Port: port, Route: core.NewRoute()}
 }

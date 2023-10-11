@@ -16,10 +16,14 @@ func Ok() config.H {
 	return msg(http.StatusText(http.StatusOK), http.StatusOK, "OK", config.H{})
 }
 
-func OkWithMsg(status string, code int, message string, data config.H) config.H {
-	return msg(status, code, message, data)
+func OkWithMsg(code int, message string) config.H {
+	return msg(http.StatusText(code), code, message, config.H{})
 }
 
 func OkWithDetails(status string, code int, message string, data config.H) config.H {
 	return msg(status, code, message, data)
+}
+
+func Fail() config.H {
+	return msg(http.StatusText(http.StatusNotFound), http.StatusNotFound, "not found page", config.H{})
 }

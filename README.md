@@ -8,6 +8,7 @@ Imitate go web gin project
   - Complete basic request response context management
 - v3.0 
   - Complete basic router and handler binding mapping
+  - Optimize router trie configuration
 - v4.0
   - complete basic route group 
 - v5.0 
