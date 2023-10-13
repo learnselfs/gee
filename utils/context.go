@@ -20,8 +20,8 @@ func OkWithMsg(code int, message string) config.H {
 	return msg(http.StatusText(code), code, message, config.H{})
 }
 
-func OkWithDetails(status string, code int, message string, data config.H) config.H {
-	return msg(status, code, message, data)
+func OkWithDetails(code int, message string, data config.H) config.H {
+	return msg(http.StatusText(code), code, message, data)
 }
 
 func Fail() config.H {

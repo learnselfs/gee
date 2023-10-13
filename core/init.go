@@ -10,3 +10,7 @@ import "github.com/learnselfs/gee/utils"
 func init() {
 	utils.Logger()
 }
+
+func Parsers(s string) []string {
+	return parser(s)
+}

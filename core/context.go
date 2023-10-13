@@ -13,35 +13,37 @@ import (
 
 type (
 	// Context
-	// @Description: request response context management
+	// @Description: request response Context management
 	Context struct {
 		//request
-		R      *http.Request `json:"request"`
-		Path   string        `json:"path"`
-		Method string        `json:"method"`
+		r      *http.Request          `info:"request"`
+		path   string                 `info:"path"`
+		method string                 `info:"method"`
+		params map[string]interface{} `info:"params"`
 		// response
-		W         http.ResponseWriter
-		StateCode int
+		w         http.ResponseWriter `info:"response"`
+		stateCode int                 `info:"stateCode"`
 	}
 )
 
-func NewContext(w http.ResponseWriter, r *http.Request) *Context {
+func newContext(w http.ResponseWriter, r *http.Request) *Context {
 	return &Context{
-		R:      r,
-		Method: r.Method,
-		Path:   r.URL.Path,
-		W:      w,
+		r:      r,
+		method: r.Method,
+		path:   r.URL.Path,
+		w:      w,
+		params: make(config.H, 0),
 	}
 }
 
 func (c *Context) SetHeader(rType string) {
-	c.W.Header().Set("Content-Type", rType)
+	c.w.Header().Set("Content-Type", rType)
 }
 
 func (c *Context) JSON(obj config.H) {
-	utils.Log.Println(c.R.URL.Path)
+	utils.Log.Println(c.r.URL.Path)
 	c.SetHeader("application/json")
-	buf := json.NewEncoder(c.W)
+	buf := json.NewEncoder(c.w)
 	err := buf.Encode(obj)
 	if err != nil {
 		utils.Log.Fatalln(err)
@@ -50,9 +52,9 @@ func (c *Context) JSON(obj config.H) {
 }
 
 func (c *Context) HTML(code int, html string) {
-	c.StateCode = code
+	c.stateCode = code
 	c.SetHeader("text/html")
-	_, i := c.W.Write([]byte(html))
+	_, i := c.w.Write([]byte(html))
 	if i != nil {
 		return
 	}
@@ -60,17 +62,21 @@ func (c *Context) HTML(code int, html string) {
 
 func (c *Context) String(code int, format string, data ...config.H) {
 	c.SetHeader("text/plain")
-	c.StateCode = code
-	_, i := c.W.Write([]byte(fmt.Sprintf(format, data)))
+	c.stateCode = code
+	_, i := c.w.Write([]byte(fmt.Sprintf(format, data)))
 	if i != nil {
 		return
 	}
 }
 
 func (c *Context) Data(code int, data []byte) {
-	c.StateCode = code
-	_, err := c.W.Write(data)
+	c.stateCode = code
+	_, err := c.w.Write(data)
 	if err != nil {
 		return
 	}
+}
+
+func (c *Context) Param(key string) any {
+	return c.params[key]
 }

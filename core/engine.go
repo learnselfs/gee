@@ -7,13 +7,13 @@ import (
 	"github.com/learnselfs/gee/utils"
 	"log"
 	"net/http"
-	"strings"
 )
 
 // Engine
 // @Description: 核心组件： 主要承载 官方组件 http server（实现 server 接口）
 type Engine struct {
-	*Route  `json:"route"`
+	//*Route  `json:"route"`
+	*Trie   `json:"trie"`
 	Address string `json:"address"`
 	Port    string `json:"port"`
 }
@@ -23,12 +23,14 @@ type Engine struct {
 // @receiver e
 // @param c
 func (e *Engine) handler(c *Context) {
-	fullPath := strings.Join([]string{c.Method, c.Path}, "-")
-	if handle, ok := e.Maps[fullPath]; ok {
-		handle(c)
+	n, params := e.search(c.method, c.path)
+	c.params = params
+	if n != nil && n.handle != nil {
+		n.handle(c)
 	} else {
 		c.JSON(utils.Fail())
 	}
+
 }
 
 // ServeHTTP
@@ -36,7 +38,7 @@ func (e *Engine) handler(c *Context) {
 // @param w http.ResponseWriter
 // @param r *http.Request
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c := NewContext(w, r)
+	c := newContext(w, r)
 	e.handler(c)
 }
 
