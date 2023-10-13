@@ -142,6 +142,15 @@ func (t *Trie) search(method, pattern string) (*node, config.H) {
 func (t *Trie) GET(pattern string, handle Handle) {
 	t.insert("GET", pattern, handle)
 }
+func (t *Trie) POST(pattern string, handle Handle) {
+	t.insert("POST", pattern, handle)
+}
+func (t *Trie) DELETE(pattern string, handle Handle) {
+	t.insert("DELETE", pattern, handle)
+}
+func (t *Trie) PUT(pattern string, handle Handle) {
+	t.insert("PUT", pattern, handle)
+}
 
 func NewTrie() *Trie {
 	return &Trie{Nodes: make(map[string]*node)}

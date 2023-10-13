@@ -80,3 +80,7 @@ func (c *Context) Data(code int, data []byte) {
 func (c *Context) Param(key string) any {
 	return c.params[key]
 }
+
+func (c *Context) PostFrom(key string) any {
+	return c.r.PostFormValue(key)
+}
