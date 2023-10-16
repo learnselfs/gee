@@ -27,3 +27,7 @@ func OkWithDetails(code int, message string, data config.H) config.H {
 func Fail() config.H {
 	return msg(http.StatusText(http.StatusNotFound), http.StatusNotFound, "not found page", config.H{})
 }
+
+func FailWithMsg(code int, message string) config.H {
+	return msg(http.StatusText(code), code, message, config.H{})
+}
