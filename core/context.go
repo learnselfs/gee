@@ -25,6 +25,8 @@ type (
 		method             string                 `info:"method"`
 		params             map[string]interface{} `info:"params"`
 		maxMultipartMemory int64                  `info:"maxMultipartMemory"`
+		middleware         []Handle
+		index              int `info:"index"`
 		// response
 		w         http.ResponseWriter `info:"response"`
 		stateCode int                 `info:"stateCode"`
@@ -36,6 +38,8 @@ func newContext(w http.ResponseWriter, r *http.Request) *Context {
 		r:                  r,
 		method:             r.Method,
 		path:               r.URL.Path,
+		middleware:         make([]Handle, 0),
+		index:              -1,
 		w:                  w,
 		params:             make(config.H, 0),
 		maxMultipartMemory: 8 << 20,
@@ -129,4 +133,12 @@ func (c *Context) SaveUploadFile(fileHeader *multipart.FileHeader, fp string) er
 	_, err = io.Copy(destination, source)
 	return err
 
+}
+
+func (c *Context) Next() {
+	c.index++
+	length := len(c.middleware)
+	for ; c.index < length; c.index++ {
+		c.middleware[c.index](c)
+	}
 }

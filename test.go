@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"github.com/learnselfs/gee/core"
+	"github.com/learnselfs/gee/middleware"
 	"github.com/learnselfs/gee/utils"
 	"net/http"
 )
@@ -63,9 +64,64 @@ func WithV2() {
 //	e.Run()
 //}
 
-func WithV4() {
+//func WithV4() {
+//	engine := New("localhost", "8088")
+//	home := engine.NewGroup("/home")
+//	{
+//		home.GET("/index", func(c *core.Context) {
+//			c.JSON(utils.OkWithMsg(http.StatusOK, "index"))
+//		})
+//	}
+//
+//	manager := engine.NewGroup("/manager")
+//	{
+//		manager.GET("/index", func(c *core.Context) {
+//			c.JSON(utils.OkWithMsg(http.StatusOK, "manager/ index"))
+//		})
+//		manager.POST("/upload", func(c *core.Context) {
+//			title := c.PostForm("title")
+//			file, err := c.PostFile("file")
+//			if err != nil {
+//				c.JSON(utils.FailWithMsg(http.StatusNotFound, err.Error()))
+//				return
+//			}
+//			err = c.SaveUploadFile(file, "f:\\go\\"+fmt.Sprintf("%s", title))
+//			if err != nil {
+//				c.JSON(utils.FailWithMsg(http.StatusNotFound, err.Error()))
+//				return
+//			}
+//			c.JSON(utils.OkWithMsg(http.StatusOK, "manager/ upload"))
+//		})
+//
+//		manager.POST("/uploads", func(c *core.Context) {
+//			title := c.PostForm("title")
+//			form, err := c.MultipartFile()
+//			if err != nil {
+//				c.JSON(utils.FailWithMsg(http.StatusNotFound, err.Error()))
+//				return
+//			}
+//			files := form.File["files"]
+//			for _, file := range files {
+//				err = c.SaveUploadFile(file, "f:\\go\\"+file.Filename)
+//				if err != nil {
+//					c.JSON(utils.FailWithMsg(http.StatusNotFound, err.Error()))
+//					return
+//				}
+//			}
+//			c.JSON(utils.OkWithMsg(http.StatusOK, "manager"+title))
+//		})
+//	}
+//	engine.Run()
+//}
+
+func WithV5() {
+
 	engine := New("localhost", "8088")
+	engine.Use(middleware.Log1())
 	home := engine.NewGroup("/home")
+	home.Use(middleware.Log4())
+	home.Use(middleware.Log5())
+	home.Use(middleware.Log6())
 	{
 		home.GET("/index", func(c *core.Context) {
 			c.JSON(utils.OkWithMsg(http.StatusOK, "index"))
@@ -73,6 +129,8 @@ func WithV4() {
 	}
 
 	manager := engine.NewGroup("/manager")
+	manager.Use(middleware.Log2())
+	manager.Use(middleware.Log3())
 	{
 		manager.GET("/index", func(c *core.Context) {
 			c.JSON(utils.OkWithMsg(http.StatusOK, "manager/ index"))
@@ -119,6 +177,5 @@ func testParser() {
 
 }
 func main() {
-	WithV4()
-	//testParser()
+	WithV5()
 }

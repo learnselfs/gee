@@ -7,6 +7,7 @@ import (
 	"github.com/learnselfs/gee/utils"
 	"log"
 	"net/http"
+	"strings"
 )
 
 // Engine
@@ -17,7 +18,7 @@ type Engine struct {
 	Address string `json:"address"`
 	Port    string `json:"port"`
 	*Group
-	groups []*Group `json:"groups"`
+	groups []*Group `info:"groups"`
 }
 
 // handler
@@ -27,8 +28,9 @@ type Engine struct {
 func (e *Engine) handler(c *Context) {
 	n, params := e.search(c.method, c.path)
 	c.params = params
+	c.middleware = append(c.middleware, n.handle)
 	if n != nil && n.handle != nil {
-		n.handle(c)
+		c.Next()
 	} else {
 		c.JSON(utils.Fail())
 	}
@@ -41,6 +43,11 @@ func (e *Engine) handler(c *Context) {
 // @param r *http.Request
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c := newContext(w, r)
+	for _, group := range e.groups {
+		if strings.HasPrefix(c.path, group.prefix) {
+			c.middleware = append(c.middleware, group.middleware...)
+		}
+	}
 	e.handler(c)
 }
 

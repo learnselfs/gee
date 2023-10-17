@@ -4,9 +4,10 @@
 package core
 
 type Group struct {
-	engine *Engine
-	parent *Group
-	prefix string
+	engine     *Engine
+	parent     *Group
+	prefix     string
+	middleware []Handle
 }
 
 func (g *Group) NewGroup(prefix string) *Group {
@@ -30,4 +31,8 @@ func (g *Group) PUT(path string, handle Handle) {
 }
 func (g *Group) DELETE(path string, handle Handle) {
 	g.AddRoute("DELETE", path, handle)
+}
+
+func (g *Group) Use(handle Handle) {
+	g.middleware = append(g.middleware, handle)
 }
