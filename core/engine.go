@@ -16,6 +16,8 @@ type Engine struct {
 	*Trie   `json:"trie"`
 	Address string `json:"address"`
 	Port    string `json:"port"`
+	*Group
+	groups []*Group `json:"groups"`
 }
 
 // handler
@@ -50,4 +52,11 @@ func (e *Engine) Run() {
 	if err != nil {
 		return
 	}
+}
+
+func NewEngine(address, port string) *Engine {
+	engine := &Engine{Address: address, Port: port, groups: make([]*Group, 0), Trie: NewTrie()}
+	engine.Group = &Group{engine: engine}
+	engine.groups = append(engine.groups, engine.Group)
+	return engine
 }

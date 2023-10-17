@@ -47,13 +47,12 @@ func (c *Context) SetHeader(rType string) {
 }
 
 func (c *Context) JSON(obj config.H) {
-	utils.Log.Println(c.method, c.r.URL.Path)
+	utils.Log.Println(c.method, c.r.URL.Path, obj)
 	c.SetHeader("application/json")
 	buf := json.NewEncoder(c.w)
 	err := buf.Encode(obj)
 	if err != nil {
 		utils.Log.Fatalln(err)
-		return
 	}
 }
 
