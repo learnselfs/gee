@@ -14,11 +14,11 @@ import (
 // @Description: 核心组件： 主要承载 官方组件 http server（实现 server 接口）
 type Engine struct {
 	//*Route  `json:"route"`
-	*Trie   `json:"trie"`
-	Address string `json:"address"`
-	Port    string `json:"port"`
+	*Trie `json:"trie"`
 	*Group
-	groups []*Group `info:"groups"`
+	Address string   `json:"address"`
+	Port    string   `json:"port"`
+	groups  []*Group `info:"groups"`
 }
 
 // handler
@@ -27,9 +27,9 @@ type Engine struct {
 // @param c
 func (e *Engine) handler(c *Context) {
 	n, params := e.search(c.method, c.path)
-	c.params = params
-	c.middleware = append(c.middleware, n.handle)
 	if n != nil && n.handle != nil {
+		c.params = params
+		c.middleware = append(c.middleware, n.handle)
 		c.Next()
 	} else {
 		c.JSON(utils.Fail())

@@ -3,6 +3,13 @@
 // @Desc
 package core
 
+import (
+	"fmt"
+	"github.com/learnselfs/gee/utils"
+	"net/http"
+	"path/filepath"
+)
+
 type Group struct {
 	engine     *Engine
 	parent     *Group
@@ -35,4 +42,22 @@ func (g *Group) DELETE(path string, handle Handle) {
 
 func (g *Group) Use(handle Handle) {
 	g.middleware = append(g.middleware, handle)
+}
+
+func (g *Group) createHandler(path string) Handle {
+	absPath, _ := filepath.Abs("." + path)
+	httpPath := http.Dir(absPath)
+	filePath := http.StripPrefix(path, http.FileServer(httpPath))
+	return func(c *Context) {
+		file := c.Param("file")
+		if _, err := httpPath.Open(fmt.Sprintf("%s", file)); err != nil {
+			c.JSON(utils.FailWithMsg(http.StatusNotFound, err.Error()))
+		}
+		filePath.ServeHTTP(c.w, c.r)
+	}
+}
+
+func (g *Group) Static(path string) {
+	handle := g.createHandler(path)
+	g.GET(path+"/*file", handle)
 }

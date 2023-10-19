@@ -9,6 +9,7 @@ import (
 	"github.com/learnselfs/gee/middleware"
 	"github.com/learnselfs/gee/utils"
 	"net/http"
+	"path/filepath"
 )
 
 func WithV2() {
@@ -114,7 +115,64 @@ func WithV2() {
 //	engine.Run()
 //}
 
-func WithV5() {
+//func WithV5() {
+//
+//	engine := New("localhost", "8088")
+//	engine.Use(middleware.Log1())
+//	home := engine.NewGroup("/home")
+//	home.Use(middleware.Log4())
+//	home.Use(middleware.Log5())
+//	home.Use(middleware.Log6())
+//	{
+//		home.GET("/index", func(c *core.Context) {
+//			c.JSON(utils.OkWithMsg(http.StatusOK, "index"))
+//		})
+//	}
+//
+//	manager := engine.NewGroup("/manager")
+//	manager.Use(middleware.Log2())
+//	manager.Use(middleware.Log3())
+//	{
+//		manager.GET("/index", func(c *core.Context) {
+//			c.JSON(utils.OkWithMsg(http.StatusOK, "manager/ index"))
+//		})
+//		manager.POST("/upload", func(c *core.Context) {
+//			title := c.PostForm("title")
+//			file, err := c.PostFile("file")
+//			if err != nil {
+//				c.JSON(utils.FailWithMsg(http.StatusNotFound, err.Error()))
+//				return
+//			}
+//			err = c.SaveUploadFile(file, "f:\\go\\"+fmt.Sprintf("%s", title))
+//			if err != nil {
+//				c.JSON(utils.FailWithMsg(http.StatusNotFound, err.Error()))
+//				return
+//			}
+//			c.JSON(utils.OkWithMsg(http.StatusOK, "manager/ upload"))
+//		})
+//
+//		manager.POST("/uploads", func(c *core.Context) {
+//			title := c.PostForm("title")
+//			form, err := c.MultipartFile()
+//			if err != nil {
+//				c.JSON(utils.FailWithMsg(http.StatusNotFound, err.Error()))
+//				return
+//			}
+//			files := form.File["files"]
+//			for _, file := range files {
+//				err = c.SaveUploadFile(file, "f:\\go\\"+file.Filename)
+//				if err != nil {
+//					c.JSON(utils.FailWithMsg(http.StatusNotFound, err.Error()))
+//					return
+//				}
+//			}
+//			c.JSON(utils.OkWithMsg(http.StatusOK, "manager"+title))
+//		})
+//	}
+//	engine.Run()
+//}
+
+func WithV6() {
 
 	engine := New("localhost", "8088")
 	engine.Use(middleware.Log1())
@@ -168,14 +226,25 @@ func WithV5() {
 			c.JSON(utils.OkWithMsg(http.StatusOK, "manager"+title))
 		})
 	}
+	// http://127.0.0.1:8088/utils/logger.go
+	engine.Static("/utils")
 	engine.Run()
 }
 
 func testParser() {
 	result := core.Parsers("/admin/info")
 	fmt.Println(result)
-
 }
+
+func testFileServer() {
+	p, _ := filepath.Abs("./")
+	path := http.Dir(p)
+	FileHandle := http.FileServer(http.Dir(path))
+	fileHandle := http.StripPrefix("/a/", FileHandle)
+	utils.Log.Fatal(http.ListenAndServe("127.0.0.1:8088", fileHandle))
+	//utils.Log.Println(path)path
+}
+
 func main() {
-	WithV5()
+	WithV6()
 }
