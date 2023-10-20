@@ -1,7 +1,7 @@
 // Package gee @Author Bing
 // @Date 2023/9/26 21:09:00
 // @Describe gee main function
-package main
+package gee
 
 import "github.com/learnselfs/gee/core"
 

@@ -1,10 +1,11 @@
 // Package test @Author Bing
 // @Date 2023/10/9 14:51:00
 // @Desc
-package main
+package test
 
 import (
 	"fmt"
+	"github.com/learnselfs/gee"
 	"github.com/learnselfs/gee/config"
 	"github.com/learnselfs/gee/core"
 	"github.com/learnselfs/gee/middleware"
@@ -15,12 +16,12 @@ import (
 )
 
 func WithV2() {
-	e := New("localhost", "8088")
+	e := gee.New("localhost", "8088")
 	e.Run()
 }
 
 func WithV3() {
-	e := New("localhost", "8088")
+	e := gee.New("localhost", "8088")
 	e.GET("/", func(c *core.Context) {
 		c.JSON(utils.OkWithMsg(http.StatusOK, "welcome web v3 home"))
 	})
@@ -68,7 +69,7 @@ func WithV3() {
 }
 
 func WithV4() {
-	engine := New("localhost", "8088")
+	engine := gee.New("localhost", "8088")
 	home := engine.NewGroup("/home")
 	{
 		home.GET("/index", func(c *core.Context) {
@@ -119,7 +120,7 @@ func WithV4() {
 
 func WithV5() {
 
-	engine := New("localhost", "8088")
+	engine := gee.New("localhost", "8088")
 	engine.Use(middleware.Log1())
 	home := engine.NewGroup("/home")
 	home.Use(middleware.Log4())
@@ -233,7 +234,7 @@ func WithV6() {
 		Username string
 		Password string
 	}
-	engine := New("localhost", "8088")
+	engine := gee.New("localhost", "8088")
 
 	// http://127.0.0.1:8088/utils/logger.go
 	engine.Static("/static")
@@ -317,8 +318,4 @@ func testFileServer() {
 	fileHandle := http.StripPrefix("/a/", FileHandle)
 	utils.Log.Fatal(http.ListenAndServe("127.0.0.1:8088", fileHandle))
 	//utils.Log.Println(path)path
-}
-
-func main() {
-	WithV6()
 }
