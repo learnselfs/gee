@@ -19,6 +19,7 @@ type (
 	// Context
 	// @Description: request response Context management
 	Context struct {
+		engine *Engine
 		//request
 		r                  *http.Request          `info:"request"`
 		path               string                 `info:"path"`
@@ -60,11 +61,12 @@ func (c *Context) JSON(obj config.H) {
 	}
 }
 
-func (c *Context) HTML(code int, html string) {
+func (c *Context) HTML(code int, name string, data any) {
 	c.stateCode = code
 	c.SetHeader("text/html")
-	_, i := c.w.Write([]byte(html))
-	if i != nil {
+	err := c.engine.template.ExecuteTemplate(c.w, name, data)
+	if err != nil {
+		utils.Log.Fatalln(err)
 		return
 	}
 }

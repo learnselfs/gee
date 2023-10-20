@@ -5,11 +5,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/learnselfs/gee/config"
 	"github.com/learnselfs/gee/core"
 	"github.com/learnselfs/gee/middleware"
 	"github.com/learnselfs/gee/utils"
 	"net/http"
 	"path/filepath"
+	"time"
 )
 
 func WithV2() {
@@ -172,9 +174,22 @@ func WithV2() {
 //	engine.Run()
 //}
 
+func FormatAsDate(t time.Time) string {
+	year, month, day := t.Date()
+	return fmt.Sprintf("%d-%02d-%02d", year, month, day)
+}
 func WithV6() {
-
+	type user struct {
+		Id       int
+		Username string
+		Password string
+	}
 	engine := New("localhost", "8088")
+
+	// http://127.0.0.1:8088/utils/logger.go
+	engine.Static("/static")
+	engine.LoadHtml("templates/*")
+
 	engine.Use(middleware.Log1())
 	home := engine.NewGroup("/home")
 	home.Use(middleware.Log4())
@@ -182,7 +197,18 @@ func WithV6() {
 	home.Use(middleware.Log6())
 	{
 		home.GET("/index", func(c *core.Context) {
-			c.JSON(utils.OkWithMsg(http.StatusOK, "index"))
+			user1 := &user{Id: 1, Username: "user1", Password: "pass1"}
+			user2 := &user{Id: 2, Username: "user2", Password: "pass2"}
+			c.HTML(http.StatusOK,
+				"index.html",
+				config.H{"title": "index information", "users": [2]*user{user1, user2}})
+		})
+
+		home.GET("/base", func(c *core.Context) {
+			c.HTML(http.StatusOK,
+				"base.hktml",
+				config.H{"title": "index information", "user": "admin"})
+
 		})
 	}
 
@@ -226,8 +252,7 @@ func WithV6() {
 			c.JSON(utils.OkWithMsg(http.StatusOK, "manager"+title))
 		})
 	}
-	// http://127.0.0.1:8088/utils/logger.go
-	engine.Static("/utils")
+
 	engine.Run()
 }
 

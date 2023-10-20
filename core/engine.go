@@ -5,6 +5,7 @@ package core
 
 import (
 	"github.com/learnselfs/gee/utils"
+	"html/template"
 	"log"
 	"net/http"
 	"strings"
@@ -16,9 +17,11 @@ type Engine struct {
 	//*Route  `json:"route"`
 	*Trie `json:"trie"`
 	*Group
-	Address string   `json:"address"`
-	Port    string   `json:"port"`
-	groups  []*Group `info:"groups"`
+	Address  string   `json:"address"`
+	Port     string   `json:"port"`
+	groups   []*Group `info:"groups"`
+	template *template.Template
+	funMap   template.FuncMap
 }
 
 // handler
@@ -43,12 +46,17 @@ func (e *Engine) handler(c *Context) {
 // @param r *http.Request
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	c := newContext(w, r)
+	c.engine = e
 	for _, group := range e.groups {
 		if strings.HasPrefix(c.path, group.prefix) {
 			c.middleware = append(c.middleware, group.middleware...)
 		}
 	}
 	e.handler(c)
+}
+
+func (e *Engine) LoadHtml(path string) {
+	e.template = template.Must(template.New("").ParseGlob(path))
 }
 
 // Run
